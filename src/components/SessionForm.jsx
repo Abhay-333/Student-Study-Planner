@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { SessionContext } from "../context/SessionContext";
 import { nanoid } from "nanoid/non-secure";
@@ -7,17 +7,57 @@ import SessionList from "./SessionList";
 const SessionForm = () => {
   const { setSessions } = useContext(SessionContext);
   const [showList, setShowList] = useState(false);
+  const [editingSession, setEditingSession] = useState(null);
 
-  const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset, setValue } = useForm();
 
   const handleFormSubmit = (data) => {
-    const id = nanoid();
-    setSessions((prevSessions) => [...prevSessions, { ...data, userId: id }]);
-    reset();
+    if (editingSession) {
+      setEditingSession((prev)=>({...prev, }))
+      setSessions((prevSessions) =>
+        prevSessions.map((session) =>
+          session.userId === editingSession.userId
+            ? { ...session, ...data, isEditing: false}
+            : session,
+        ),
+      );
+      setShowList((prev)=>!prev)
+    } else {
+      const id = nanoid();
+      setSessions((prevSessions) => [
+        ...prevSessions,
+        { ...data, userId: id, isEditing: false },
+      ]);
+      reset();
+    }
   };
 
+  const onDeleteSession = (id) => {
+    console.log(id);
+    setSessions((prevSessions)=>prevSessions.filter((session)=>session.userId !== id))  
+  };
+
+  useEffect(() => {
+    if (editingSession) {
+      reset(editingSession);
+    } else {
+      reset({
+        topic: "",
+        subject: "DSA",
+        duration: "",
+        priority: "Medium",
+        date: "",
+      });
+    }
+  }, [editingSession, reset]);
+
   return showList ? (
-    <SessionList setShowList={setShowList}/>
+    <SessionList
+      setShowList={setShowList}
+      onDelete={onDeleteSession}
+      editingSession={editingSession}
+      setEditingSession={setEditingSession}
+    />
   ) : (
     <div className="max-w-xl mx-auto bg-zinc-900 p-6 rounded-2xl shadow-lg border border-zinc-800">
       <h2 className="text-xl font-semibold text-white mb-6">
@@ -109,7 +149,7 @@ const SessionForm = () => {
             type="submit"
             className="w-1/2 cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg transition"
           >
-            Add Session
+            {editingSession?.isEditing ? "Update Session" : "Add Session"}
           </button>
 
           <button

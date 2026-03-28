@@ -1,13 +1,29 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import SessionCard from "./SessionCard";
 import { SessionContext } from "../context/SessionContext";
+import { useForm } from "react-hook-form";
 
-const SessionList = ({
-  setShowList,
-  onEditSession,
-  onDeleteSession,
-}) => {
+const SessionList = ({ setShowList, onDelete, editingSession,setEditingSession}) => {
   const { sessions } = useContext(SessionContext);
+  const totalDuration = sessions.reduce(
+    (total, session) => total + Number(session.duration || 0),
+    0,
+  );
+
+  const onEditSession = (currentSession) => {
+    if(currentSession){
+      currentSession.isEditing = true
+      setEditingSession(currentSession)
+      // console.log(currentSession.isEditing)
+      setShowList((prev)=>!prev)
+    }
+  };
+
+  useEffect(()=>{
+
+  },[editingSession])
+ 
+
   return (
     <section className="mx-auto w-full max-w-6xl">
       <div className="mb-6 flex items-end justify-between gap-4">
@@ -39,6 +55,15 @@ const SessionList = ({
               {sessions.length}
             </p>
           </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-right">
+            <p className="text-xs uppercase tracking-[0.22em] text-zinc-500">
+              Total Duration
+            </p>
+            <p className="mt-1 text-2xl font-semibold text-white">
+              {totalDuration} mins
+            </p>
+          </div>
         </div>
       </div>
 
@@ -49,7 +74,7 @@ const SessionList = ({
               key={session.userId || `${session.topic}-${session.date}`}
               session={session}
               onEdit={onEditSession}
-              onDelete={onDeleteSession}
+              onDelete={onDelete}
             />
           ))}
         </div>

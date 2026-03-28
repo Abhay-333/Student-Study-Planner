@@ -1,6 +1,3 @@
-import React, { useContext } from "react";
-import { SessionContext } from "../context/SessionContext";
-
 const priorityStyles = {
   High: "bg-rose-500/15 text-rose-300 ring-1 ring-inset ring-rose-400/30",
   Medium: "bg-amber-500/15 text-amber-300 ring-1 ring-inset ring-amber-400/30",
@@ -8,8 +5,6 @@ const priorityStyles = {
 };
 
 const SessionCard = ({ session, onEdit, onDelete }) => {
-  
-
   const {
     topic = "Untitled Session",
     subject = "General",
@@ -62,14 +57,14 @@ const SessionCard = ({ session, onEdit, onDelete }) => {
       <div className="mt-4 flex items-center gap-3">
         <button
           type="button"
-          onClick={() => onEdit?.(session)}
+          onClick={() => onEdit(session)}
           className="flex-1 cursor-pointer rounded-2xl bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-400"
         >
           Edit
         </button>
         <button
           type="button"
-          onClick={() => onDelete?.(session)}
+          onClick={() => onDelete(session.userId)}
           className="flex-1 cursor-pointer rounded-2xl border border-rose-400/30 bg-rose-500/10 px-4 py-2.5 text-sm font-semibold text-rose-200 transition hover:bg-rose-500/20"
         >
           Delete
